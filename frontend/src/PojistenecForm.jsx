@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import './PojistenecForm.css';
 
 function PojistenecForm({ onSuccess, editData, setEditData }) {
   const [formData, setFormData] = useState({
@@ -10,13 +11,10 @@ function PojistenecForm({ onSuccess, editData, setEditData }) {
     vek: ''
   })
 
-  // --- 1. SLEDOVÁNÍ ZMĚN (useEffect) ---
-  // Toto se spustí pokaždé, když v App.jsx klikneš na "Upravit"
   useEffect(() => {
     if (editData) {
-      setFormData(editData) // Vyplní formulář daty pojištěnce
+      setFormData(editData)
     } else {
-      // Pokud editData zmizí (např. po uložení), vyprázdníme formulář
       setFormData({ jmeno: '', prijmeni: '', email: '', telefon: '', vek: '' })
     }
   }, [editData])
@@ -28,48 +26,53 @@ function PojistenecForm({ onSuccess, editData, setEditData }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    
     try {
+      // --- KLÍČOVÁ ÚPRAVA: Získání tokenu a nastavení hlaviček ---
+      const accessToken = localStorage.getItem('access');
+      const config = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      };
+
       if (editData) {
-        // --- 2. ROZHODOVÁNÍ (UPDATE) ---
-        // Pokud upravujeme, posíláme PUT na adresu s konkrétním ID
-        await axios.put(`http://127.0.0.1:8000/api/pojistenci/${editData.id}/`, formData)
-        setEditData(null) // Resetujeme stav editace v App.jsx
+        // UPDATE: Posíláme data + config s tokenem
+        await axios.put(`http://127.0.0.1:8000/api/pojistenci/${editData.id}/`, formData, config)
+        setEditData(null)
       } else {
-        // --- 2. ROZHODOVÁNÍ (CREATE) ---
-        // Pokud neupravujeme, posíláme klasický POST
-        await axios.post('http://127.0.0.1:8000/api/pojistenci/', formData)
+        // CREATE: Posíláme data + config s tokenem
+        await axios.post('http://127.0.0.1:8000/api/pojistenci/', formData, config)
       }
       
       setFormData({ jmeno: '', prijmeni: '', email: '', telefon: '', vek: '' })
-      onSuccess() // Obnovíme tabulku v App.jsx
+      onSuccess() 
     } catch (error) {
       console.error("Chyba při ukládání:", error)
+      alert("Chyba při ukládání. Zkontrolujte, zda jste stále přihlášeni.")
     }
   }
 
   return (
-    <div style={{ backgroundColor: '#2a2a2a', padding: '20px', borderRadius: '8px', marginBottom: '20px' }}>
+    <div className="form-card"> 
       <h3>{editData ? "Upravit pojištěnce" : "Přidat nového pojištěnce"}</h3>
       
       <form onSubmit={handleSubmit}>
-        <input name="jmeno" placeholder="Jméno" value={formData.jmeno} onChange={handleChange} required />
-        <input name="prijmeni" placeholder="Příjmení" value={formData.prijmeni} onChange={handleChange} required />
-        <input name="email" type="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
-        <input name="telefon" placeholder="Telefon" value={formData.telefon} onChange={handleChange} />
-        <input name="vek" type="number" placeholder="Věk" value={formData.vek} onChange={handleChange} required />
+        <div className="form-inputs-grid">
+          <input name="jmeno" placeholder="Jméno" value={formData.jmeno} onChange={handleChange} required />
+          <input name="prijmeni" placeholder="Příjmení" value={formData.prijmeni} onChange={handleChange} required />
+          <input name="email" type="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
+          <input name="telefon" placeholder="Telefon" value={formData.telefon} onChange={handleChange} />
+          <input name="vek" type="number" placeholder="Věk" value={formData.vek} onChange={handleChange} required />
+        </div>
         
-        <div style={{ marginTop: '10px' }}>
-          <button type="submit" style={{ backgroundColor: editData ? '#4CAF50' : '#008CBA', color: 'white' }}>
+        <div style={{ marginTop: '20px' }}>
+          <button type="submit" className="submit-btn">
             {editData ? "Uložit změny" : "Uložit pojištěnce"}
           </button>
           
-          {/* Tlačítko pro zrušení editace */}
           {editData && (
-            <button 
-              type="button" 
-              onClick={() => setEditData(null)} 
-              style={{ marginLeft: '10px', backgroundColor: '#555' }}
-            >
+            <button type="button" onClick={() => setEditData(null)} className="cancel-btn">
               Zrušit
             </button>
           )}

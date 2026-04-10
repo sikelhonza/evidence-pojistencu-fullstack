@@ -1,29 +1,48 @@
 import { useState, useEffect } from 'react'
 import PojistenecForm from './PojistenecForm'
+import Login from './Login'
 import axios from 'axios'
 import './App.css'
 
 function App() {
   const [pojistenci, setPojistenci] = useState([])
   const [editujiciPojistenec, setEditujiciPojistenec] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const fetchPojistenci = async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/pojistenci/')
-      setPojistenci(response.data)
+      const accessToken = localStorage.getItem('access');
+      if (!accessToken) return;
+
+      const response = await axios.get('http://127.0.0.1:8000/api/pojistenci/', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
+      setPojistenci(response.data);
     } catch (error) {
-      console.error("Chyba při načítání dat:", error)
+      console.error("Chyba při načítání dat:", error);
+      if (error.response && error.response.status === 401) {
+        logout();
+      }
     }
   }
 
   useEffect(() => {
-    fetchPojistenci()
-  }, [])
+    if (isLoggedIn) {
+      fetchPojistenci()
+    }
+  }, [isLoggedIn])
 
   const smazPojistence = async (id) => {
     if (window.confirm("Opravdu chcete tohoto pojištěnce smazat?")) {
       try {
-        await axios.delete(`http://127.0.0.1:8000/api/pojistenci/${id}/`);
+        const accessToken = localStorage.getItem('access');
+        await axios.delete(`http://127.0.0.1:8000/api/pojistenci/${id}/`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
         fetchPojistenci();
       } catch (error) {
         console.error("Chyba při mazání:", error);
@@ -31,24 +50,42 @@ function App() {
     }
   };
 
+  const logout = () => {
+    setIsLoggedIn(false);
+    localStorage.removeItem('access');
+    localStorage.removeItem('refresh');
+    setPojistenci([]);
+    setEditujiciPojistenec(null);
+  };
+
   const vybratKEditaci = (osoba) => {
     setEditujiciPojistenec(osoba);
-    // Tip: Dobré je vyrolovat nahoru k formuláři
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  if (!isLoggedIn) {
+    return <Login onLoginSuccess={() => setIsLoggedIn(true)} />;
+  }
+
   return (
     <div className="container">
+      {/* Tlačítko odhlásit s třídou pro lepší CSS kontrolu */}
+      <div className="top-nav">
+        <button onClick={logout} className="logout-btn">
+          Odhlásit se
+        </button>
+      </div>
+      
       <h1>Evidence pojištěnců</h1>
 
-      {/* TADY BYLA TA ZMĚNA - přidáváme editData a setEditData */}
       <PojistenecForm 
         onSuccess={fetchPojistenci} 
         editData={editujiciPojistenec} 
         setEditData={setEditujiciPojistenec} 
       />
       
-      <table border="1" style={{ width: '100%', marginTop: '20px', borderCollapse: 'collapse' }}>
+      {/* Smazán border="1" a přidána className */}
+      <table className="main-table">
         <thead>
           <tr>
             <th>Jméno</th>
@@ -67,31 +104,16 @@ function App() {
               <td>{osoba.email}</td>
               <td>{osoba.telefon}</td>
               <td>{osoba.vek}</td>
-              <td style={{ textAlign: 'center' }}>
+              <td className="actions-cell">
                 <button 
                   onClick={() => vybratKEditaci(osoba)}
-                  style={{ 
-                    backgroundColor: '#4CAF50', 
-                    color: 'white', 
-                    marginRight: '8px',
-                    border: 'none', 
-                    padding: '5px 10px', 
-                    cursor: 'pointer',
-                    borderRadius: '4px' 
-                  }}
+                  className="btn-edit"
                 >
                   Upravit
                 </button>
                 <button 
                   onClick={() => smazPojistence(osoba.id)}
-                  style={{ 
-                    backgroundColor: '#ff4d4d', 
-                    color: 'white', 
-                    border: 'none', 
-                    padding: '5px 10px', 
-                    cursor: 'pointer',
-                    borderRadius: '4px' 
-                  }}
+                  className="btn-delete"
                 >
                   Smazat
                 </button>

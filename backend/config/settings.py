@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 """
 Django settings for config project.
 
@@ -40,6 +42,7 @@ INSTALLED_APPS = [
     'pojistenci',
     'rest_framework',
     'corsheaders',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
@@ -74,7 +77,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
+# https://docs.djangoproject.com/en/6.0/ref/settings/#databasesc
 
 DATABASES = {
     'default': {
@@ -120,7 +123,47 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Povolení Reactu komunikovat s Django backendem
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "http://localhost:3000",
     "http://127.0.0.1:5173",
+    "http://127.0.0.1:3000",
 ]
+
+# Říkáme Djangu, že smí přijímat token v hlavičce
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "authorization",
+    "content-type",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+
+REST_FRAMEWORK = {
+    # 1. Říkáme, JAK ověřujeme uživatele (pomocí JWT tokenu)
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    
+    # 2. Říkáme, KDO má přístup k datům (jen přihlášený uživatel)
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': True, # Django si zapíše, kdy se uživatel naposledy přihlásil
+
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',)
+}
