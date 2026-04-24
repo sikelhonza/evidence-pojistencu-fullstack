@@ -1,85 +1,57 @@
-import { useState, useEffect } from 'react'
-import axios from 'axios'
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import './PojistenecForm.css';
 
 function PojistenecForm({ onSuccess, editData, setEditData }) {
-  const [formData, setFormData] = useState({
-    jmeno: '',
-    prijmeni: '',
-    email: '',
-    telefon: '',
-    vek: ''
-  })
+  const [formData, setFormData] = useState({ jmeno: '', prijmeni: '', email: '', telefon: '', vek: '' });
 
+  // Sledujeme, zda se změnila editData (když klikneš na "Upravit")
   useEffect(() => {
     if (editData) {
-      setFormData(editData)
+      setFormData(editData);
     } else {
-      setFormData({ jmeno: '', prijmeni: '', email: '', telefon: '', vek: '' })
+      setFormData({ jmeno: '', prijmeni: '', email: '', telefon: '', vek: '' });
     }
-  }, [editData])
-
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData({ ...formData, [name]: value })
-  }
+  }, [editData]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    
-    try {
-      // --- KLÍČOVÁ ÚPRAVA: Získání tokenu a nastavení hlaviček ---
-      const accessToken = localStorage.getItem('access');
-      const config = {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      };
+    e.preventDefault();
+    const token = localStorage.getItem('access');
+    const config = { headers: { Authorization: `Bearer ${token}` } };
 
+    try {
       if (editData) {
-        // UPDATE: Posíláme data + config s tokenem
-        await axios.put(`http://127.0.0.1:8000/api/pojistenci/${editData.id}/`, formData, config)
-        setEditData(null)
+        // Režim EDITACE (PUT)
+        await axios.put(`http://127.0.0.1:8000/api/pojistenci/${editData.id}/`, formData, config);
+        setEditData(null); // Reset po úpravě
       } else {
-        // CREATE: Posíláme data + config s tokenem
-        await axios.post('http://127.0.0.1:8000/api/pojistenci/', formData, config)
+        // Režim PŘIDÁNÍ (POST)
+        await axios.post('http://127.0.0.1:8000/api/pojistenci/', formData, config);
       }
-      
-      setFormData({ jmeno: '', prijmeni: '', email: '', telefon: '', vek: '' })
-      onSuccess() 
+      setFormData({ jmeno: '', prijmeni: '', email: '', telefon: '', vek: '' });
+      onSuccess(); // Obnoví tabulku
     } catch (error) {
-      console.error("Chyba při ukládání:", error)
-      alert("Chyba při ukládání. Zkontrolujte, zda jste stále přihlášeni.")
+      console.error("Chyba při ukládání:", error);
     }
-  }
+  };
 
   return (
-    <div className="form-card"> 
-      <h3>{editData ? "Upravit pojištěnce" : "Přidat nového pojištěnce"}</h3>
-      
+    <div className="form-card">
+      <h2>{editData ? "Upravit pojištěnce" : "Přidat nového pojištěnce"}</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-inputs-grid">
-          <input name="jmeno" placeholder="Jméno" value={formData.jmeno} onChange={handleChange} required />
-          <input name="prijmeni" placeholder="Příjmení" value={formData.prijmeni} onChange={handleChange} required />
-          <input name="email" type="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
-          <input name="telefon" placeholder="Telefon" value={formData.telefon} onChange={handleChange} />
-          <input name="vek" type="number" placeholder="Věk" value={formData.vek} onChange={handleChange} required />
+          <input placeholder="Jméno" value={formData.jmeno} onChange={e => setFormData({...formData, jmeno: e.target.value})} required />
+          <input placeholder="Příjmení" value={formData.jmeno} onChange={e => setFormData({...formData, prijmeni: e.target.value})} required />
+          <input placeholder="Email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} required />
+          <input placeholder="Telefon" value={formData.telefon} onChange={e => setFormData({...formData, telefon: e.target.value})} required />
+          <input placeholder="Věk" type="number" value={formData.vek} onChange={e => setFormData({...formData, vek: e.target.value})} required />
         </div>
-        
-        <div style={{ marginTop: '20px' }}>
-          <button type="submit" className="submit-btn">
-            {editData ? "Uložit změny" : "Uložit pojištěnce"}
-          </button>
-          
-          {editData && (
-            <button type="button" onClick={() => setEditData(null)} className="cancel-btn">
-              Zrušit
-            </button>
-          )}
-        </div>
+        <button type="submit" className="submit-btn">
+          {editData ? "Uložit změny" : "Uložit pojištěnce"}
+        </button>
+        {editData && <button onClick={() => setEditData(null)} style={{marginLeft: '10px'}}>Zrušit</button>}
       </form>
     </div>
-  )
+  );
 }
-
-export default PojistenecForm
+export default PojistenecForm;

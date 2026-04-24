@@ -8,7 +8,7 @@ body {
 }
 
 .container {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 50px 20px;
 }
@@ -22,7 +22,8 @@ h1 {
   letter-spacing: -1px;
 }
 
-/* Tabulka bez mřížky */
+/* ─── TABULKA ─────────────────────────────────────────── */
+
 .main-table {
   width: 100%;
   border-collapse: collapse;
@@ -35,13 +36,16 @@ h1 {
   letter-spacing: 2px;
   color: #ffffff;
   padding: 20px;
-  border-bottom: 1px solid #222; /* Jen jedna jemná linka */
+  border-bottom: 1px solid #222;
   text-align: left;
 }
 
+/* OPRAVA: td explicitně bílá/světlá, ne zděděná šedá */
 .main-table td {
   padding: 20px;
-  border-bottom: 1px solid #111; /* Ještě jemnější linka */
+  border-bottom: 1px solid #111;
+  color: #cccccc;         /* ← viditelná barva textu v tabulce */
+  font-size: 0.95rem;
 }
 
 .main-table tr:hover td {
@@ -56,6 +60,7 @@ h1 {
   cursor: pointer;
   font-weight: 600;
   margin-right: 15px;
+  font-size: 0.9rem;
 }
 
 .btn-delete {
@@ -64,79 +69,146 @@ h1 {
   border: none;
   cursor: pointer;
   font-weight: 600;
+  font-size: 0.9rem;
 }
 
-/* Tato část se postará o ten Apple/Minimalist vzhled formuláře */
+/* ─── FORMULÁŘ ────────────────────────────────────────── */
+
 .form-card {
-  background-color: #000000; /* Stejné jako pozadí stránky */
+  background-color: #000000;
   padding: 40px;
   border-radius: 20px;
-  border: 1px solid #1a1a1a; /* Velmi jemný okraj boxu */
+  border: 1px solid #1a1a1a;
   margin-bottom: 40px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;   /* ← zabraňuje přetékání */
+}
+
+.form-card h2 {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 1.2rem;
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 35px;
 }
 
 .form-inputs-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 30px;
+  margin-bottom: 30px;
 }
 
-/* Minimalistické inputy - jen spodní linka */
+/* OPRAVA: inputy zaberou celou šířku své buňky v gridu */
 .form-card input {
+  width: 100%;             /* ← klíčová oprava */
+  box-sizing: border-box;  /* ← padding nezpůsobí přetečení */
   background: transparent;
   border: none;
   border-bottom: 1px solid #333;
-  color: #fff;
+  color: #ffffff;          /* ← bílý text při psaní */
   padding: 10px 5px;
   font-size: 1rem;
+  font-family: 'Inter', sans-serif;
   transition: border-bottom-color 0.3s;
+}
+
+.form-card input::placeholder {
+  color: #555;             /* ← jemný placeholder */
 }
 
 .form-card input:focus {
   outline: none;
-  border-bottom-color: #ffffff; /* Při kliknutí se linka rozsvítí bíle */
+  border-bottom-color: #ffffff;
 }
 
-/* Stylové bílé tlačítko */
+/* OPRAVA: tlačítko přes celou šířku karty */
 .submit-btn {
   background-color: #ffffff;
   color: #000000;
-  padding: 12px 40px;
-  border-radius: 30px;
+  padding: 10px 22px;   /* 🔽 menší */
+  border-radius: 20px;  /* 🔽 jemnější */
   border: none;
-  font-weight: 600;
+  font-weight: 700;     /* 🔽 méně tučné */
+  font-size: 0.9rem;    /* 🔽 menší text */
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: all 0.2s;
+
+  display: block;
+  width: fit-content;
+  margin: 15px auto 0;
 }
 
 .submit-btn:hover {
-  transform: scale(1.05); /* Jemné zvětšení při najetí */
+  transform: scale(1.02);
   background-color: #f0f0f0;
 }
 
-/* Kontejner pro tlačítko, aby bylo hezky vpravo a mělo odstup */
+/* ─── NAVIGACE & ODHLÁŠENÍ ────────────────────────────── */
+
 .top-nav {
   display: flex;
   justify-content: flex-end;
   margin-bottom: 20px;
 }
 
-/* Minimalistické tlačítko "Odhlásit se" */
 .logout-btn {
   background: transparent;
-  border: 1px solid #222; /* Skoro neviditelný okraj */
-  color: #555; /* Nenápadná šedá */
+  border: 1px solid #222;
+  color: #555;
   padding: 8px 20px;
   border-radius: 20px;
   font-size: 0.8rem;
   font-weight: 500;
+  font-family: 'Inter', sans-serif;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-/* Při najetí myší se tlačítko jemně rozsvítí */
 .logout-btn:hover {
   border-color: #ffffff;
   color: #ffffff;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+/* ─── TABULKA – KONTEJNER ─────────────────────────────── */
+
+.main-table-container {
+  background-color: #000000;
+  border: 1px solid #1a1a1a;
+  border-radius: 20px;
+  padding: 20px;
+  margin-top: 40px;
+  box-sizing: border-box;
+}
+
+/* ─── VYHLEDÁVÁNÍ ─────────────────────────────────────── */
+
+.search-box {
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.search-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #333;
+  color: #ffffff;
+  padding: 15px 5px;
+  font-size: 1.1rem;
+  font-family: 'Inter', sans-serif;
+  transition: border-bottom-color 0.3s;
+  box-sizing: border-box;
+}
+
+.search-input::placeholder {
+  color: #444;
+}
+
+.search-input:focus {
+  outline: none;
+  border-bottom-color: #ffffff;
 }

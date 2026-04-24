@@ -109,3 +109,11 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+#root:has(.auth-wrapper) {
+  width: 100%;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}

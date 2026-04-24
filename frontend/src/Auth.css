@@ -1,0 +1,111 @@
+/* Auth.css - společné styly pro Login a Register */
+
+/* OPRAVA: bez těchto pravidel 100vh nefunguje správně */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  height: 100%;                      /* ← React obalový element */
+}
+
+.auth-wrapper {
+  min-height: 100vh;                 /* ← min-height místo height, jistější */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #000;
+  font-family: 'Inter', sans-serif;
+}
+
+.auth-card {
+  background-color: #000000;
+  padding: 40px;
+  border-radius: 20px;
+  border: 1px solid #1a1a1a;
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
+}
+
+.auth-card h2 {
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin-top: 0;
+  margin-bottom: 30px;
+}
+
+.form-inputs-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.auth-card input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #333;
+  color: #ffffff;
+  padding: 10px 5px;
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  transition: border-bottom-color 0.3s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.auth-card input::placeholder {
+  color: #555;
+}
+
+.auth-card input:focus {
+  outline: none;
+  border-bottom-color: #ffffff;
+}
+
+.submit-btn {
+  background-color: #ffffff;
+  color: #000000;
+  padding: 14px 35px;
+  border-radius: 30px;
+  border: none;
+  font-weight: 800;
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+  width: 100%;
+  display: block;
+}
+
+.submit-btn:hover {
+  transform: scale(1.02);
+  background-color: #f0f0f0;
+}
+
+.switch-link {
+  color: #555;
+  margin-top: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: color 0.3s;
+}
+
+.switch-link:hover {
+  color: #ffffff;
+}
+
+.auth-wrapper {
+  flex: 1;  /* ← zabere celou zbývající výšku #root */
+  min-height: 100svh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #000;
+  font-family: 'Inter', sans-serif;
+}
