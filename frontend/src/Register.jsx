@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import './Auth.css';
+import toast from 'react-hot-toast'
 
 function Register({ onSwitchToLogin }) {
   const [formData, setFormData] = useState({
@@ -16,11 +17,11 @@ function Register({ onSwitchToLogin }) {
     e.preventDefault();
     try {
       await axios.post('http://127.0.0.1:8000/api/register/', formData);
-      alert("Registrace proběhla úspěšně! Nyní se můžeš přihlásit.");
+      toast.success("Registrace proběhla úspěšně! Nyní se můžeš přihlásit.");
       onSwitchToLogin();
     } catch (error) {
       const message = error.response?.data?.password || "Registrace selhala. Zkontroluj údaje.";
-      alert(message);
+      toast.error(message);
     }
   };
 

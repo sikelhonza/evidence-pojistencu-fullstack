@@ -1,0 +1,25 @@
+/* Login.css */
+.login-wrapper {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #121212 0%, #1e1e1e 100%);
+}
+
+.login-box {
+  background: #252525;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+  width: 100%;
+  max-width: 350px;
+  text-align: center;
+}
+
+.login-box input {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 15px;
+  padding: 12px;
+}
