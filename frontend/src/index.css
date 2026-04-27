@@ -127,3 +127,9 @@ code {
 #root:has(.navbar) {
   border-inline: none;
 }
+
+#root:has(.landing) {
+  width: 100%;
+  border: none;
+  max-width: 100%;
+}

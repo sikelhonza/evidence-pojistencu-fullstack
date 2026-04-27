@@ -1,0 +1,250 @@
+/* ─── LANDING ─────────────────────────────────────────── */
+
+.landing {
+  min-height: 100vh;
+  background-color: #000;
+  color: #fff;
+  width: 100%;
+}
+
+.landing-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 60px;
+  border-bottom: 1px solid #1a1a1a;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.landing-logo {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ff6b2b;
+  letter-spacing: -0.5px;
+  padding-right: 30px;
+  border-right: 1px solid #333;
+}
+
+.landing-nav-btns {
+  display: flex;
+  gap: 15px;
+}
+
+.landing-btn-outline {
+  background: transparent;
+  border: 1px solid #333;
+  color: #fff;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.landing-btn-outline:hover {
+  border-color: #ff6b2b;
+  color: #ff6b2b;
+}
+
+.landing-btn-solid {
+  background: #ff6b2b;
+  border: 1px solid #ff6b2b;
+  color: #000;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.landing-btn-solid:hover {
+  background: #ff8c55;
+  border-color: #ff8c55;
+}
+
+.landing-btn-lg {
+  padding: 14px 35px;
+  font-size: 1rem;
+  border-radius: 30px;
+}
+
+/* ← přidán position: relative a overflow: hidden pro orby */
+.landing-hero {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  padding: 60px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.landing-hero-content {
+  max-width: 800px;
+  position: relative; /* ← aby byl obsah nad orby */
+  z-index: 1;
+}
+
+.landing-hero-title {
+  font-size: 4rem;
+  font-weight: 300;
+  letter-spacing: -2px;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+.landing-accent {
+  color: #ff6b2b;
+}
+
+.landing-hero-sub {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 40px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.landing-hero-btns {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.landing-features {
+  padding: 80px 60px;
+  border-top: 1px solid #1a1a1a;
+  box-sizing: border-box;
+}
+
+.landing-section-title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 300;
+  color: #fff;
+  margin-bottom: 50px;
+  letter-spacing: -1px;
+}
+
+.landing-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.landing-feature-card {
+  background: #0a0a0a;
+  border: 1px solid #1a1a1a;
+  border-radius: 20px;
+  padding: 35px;
+  transition: border-color 0.3s;
+  text-align: left;
+}
+
+.landing-feature-card:hover {
+  border-color: #ff6b2b;
+}
+
+.landing-feature-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 15px;
+}
+
+.landing-feature-card h3 {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.landing-feature-card p {
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.landing-cta {
+  padding: 80px 60px;
+  text-align: center;
+  border-top: 1px solid #1a1a1a;
+  box-sizing: border-box;
+}
+
+.landing-cta h2 {
+  font-size: 2.5rem;
+  font-weight: 300;
+  color: #fff;
+  margin-bottom: 15px;
+  letter-spacing: -1px;
+}
+
+.landing-cta p {
+  color: #666;
+  margin-bottom: 35px;
+  font-size: 1.1rem;
+}
+
+.landing-footer {
+  padding: 30px 60px;
+  border-top: 1px solid #1a1a1a;
+  text-align: center;
+  color: #333;
+  font-size: 0.85rem;
+  box-sizing: border-box;
+}
+
+/* ─── ORBS ────────────────────────────────────────────── */
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.25;
+  animation: float 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.orb-1 {
+  width: 500px;
+  height: 500px;
+  background: #ff6b2b;
+  top: -100px;
+  left: -100px;
+  animation-delay: 0s;
+}
+
+.orb-2 {
+  width: 400px;
+  height: 400px;
+  background: #ff6b2b;
+  bottom: -100px;
+  right: -50px;
+  animation-delay: 3s;
+}
+
+.orb-3 {
+  width: 300px;
+  height: 300px;
+  background: #ff8c55;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: 1.5s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-50px) scale(1.1); }  /* ← větší pohyb */
+}

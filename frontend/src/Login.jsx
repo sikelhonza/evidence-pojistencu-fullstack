@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import './Auth.css';
+import toast from 'react-hot-toast';
 
 function Login({ onLoginSuccess, onSwitchToRegister }) {
   const [username, setUsername] = useState('');
@@ -13,7 +14,9 @@ function Login({ onLoginSuccess, onSwitchToRegister }) {
       localStorage.setItem('access', response.data.access);
       localStorage.setItem('refresh', response.data.refresh);
       onLoginSuccess();
-    } catch (error) { alert("Přihlášení selhalo."); }
+    } catch (error) {
+      toast.error("Přihlášení selhalo. Zkontroluj údaje.");
+    }
   };
 
   return (

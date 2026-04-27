@@ -316,3 +316,131 @@ h1 {
   background-color: #ff6b2b;
   box-shadow: 0 0 10px rgba(255, 107, 43, 0.3);
 }
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.navbar-user {
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.admin-badge {
+  background-color: #ff6b2b;
+  color: #000;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-left: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: #ff6b2b;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 30px;
+  padding: 0;
+}
+
+.back-btn:hover {
+  color: #ffffff;
+}
+
+.detail-card {
+  background-color: #0a0a0a;
+  border: 1px solid #1a1a1a;
+  border-radius: 20px;
+  padding: 40px;
+  margin-bottom: 40px;
+}
+
+.detail-card h1 {
+  margin-bottom: 30px;
+  text-align: left;
+  font-size: 2rem;
+}
+
+.detail-info {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.detail-row {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.detail-label {
+  color: #555;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  min-width: 100px;
+}
+
+.pojistky-section {
+  margin-top: 20px;
+}
+
+.pojistky-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.pojistky-header h2 {
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 300;
+}
+
+.form-select {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #333;
+  color: #ffffff;
+  padding: 10px 5px;
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  width: 100%;
+  cursor: pointer;
+}
+
+.form-select option {
+  background: #111;
+  color: #ffffff;
+}
+
+.form-select:focus {
+  outline: none;
+  border-bottom-color: #ffffff;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.navbar-logo {
+  color: #ff6b2b;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  letter-spacing: -0.5px;
+  padding-right: 30px;
+  border-right: 1px solid #333;  /* ← oddělovač */
+}

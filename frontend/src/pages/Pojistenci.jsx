@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PojistenecForm from '../PojistenecForm';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -7,6 +8,7 @@ function Pojistenci({ isAdmin, onLogout }) {
   const [pojistenci, setPojistenci] = useState([]);
   const [editujiciPojistenec, setEditujiciPojistenec] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
 
   const fetchPojistenci = async () => {
     try {
@@ -38,7 +40,8 @@ function Pojistenci({ isAdmin, onLogout }) {
     );
   });
 
-  const smazPojistence = async (id) => {
+  const smazPojistence = async (e, id) => {
+    e.stopPropagation(); // ← zabrání přechodu na detail při kliknutí na smazat
     toast((t) => (
       <span>
         Opravdu smazat pojištěnce?{' '}
@@ -71,7 +74,8 @@ function Pojistenci({ isAdmin, onLogout }) {
     ), { duration: 5000 });
   };
 
-  const vybratKEditaci = (osoba) => {
+  const vybratKEditaci = (e, osoba) => {
+    e.stopPropagation(); // ← zabrání přechodu na detail při kliknutí na upravit
     setEditujiciPojistenec(osoba);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -108,7 +112,11 @@ function Pojistenci({ isAdmin, onLogout }) {
           </thead>
           <tbody>
             {filtrovaniPojistenci.map(osoba => (
-              <tr key={osoba.id}>
+              <tr
+                key={osoba.id}
+                onClick={() => navigate(`/pojistenci/${osoba.id}`)}
+                style={{ cursor: 'pointer' }}
+              >
                 <td>{osoba.jmeno}</td>
                 <td>{osoba.prijmeni}</td>
                 <td>{osoba.email}</td>
@@ -116,8 +124,8 @@ function Pojistenci({ isAdmin, onLogout }) {
                 <td>{osoba.vek}</td>
                 {isAdmin && (
                   <td className="actions-cell">
-                    <button onClick={() => vybratKEditaci(osoba)} className="btn-edit">Upravit</button>
-                    <button onClick={() => smazPojistence(osoba.id)} className="btn-delete">Smazat</button>
+                    <button onClick={(e) => vybratKEditaci(e, osoba)} className="btn-edit">Upravit</button>
+                    <button onClick={(e) => smazPojistence(e, osoba.id)} className="btn-delete">Smazat</button>
                   </td>
                 )}
               </tr>

@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from .models import Pojistenec
-from .serializers import PojistenecSerializer
+from .models import Pojistenec, Pojistka
+from .serializers import PojistenecSerializer, PojistkaSerializer
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
@@ -11,6 +11,11 @@ from django.contrib.auth.models import User
 class PojistenecViewSet(viewsets.ModelViewSet):
     queryset = Pojistenec.objects.all()
     serializer_class = PojistenecSerializer
+    permission_classes = [IsAuthenticated]
+
+class PojistkaViewSet(viewsets.ModelViewSet):
+    queryset = Pojistka.objects.all()
+    serializer_class = PojistkaSerializer
     permission_classes = [IsAuthenticated]
 
 @api_view(['POST'])
@@ -34,9 +39,10 @@ def register(request):
     if User.objects.filter(username=username).exists():
         return Response({'password': 'Uživatel s tímto jménem již existuje.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    User.objects.create_user(username=username, email=email, password=password)
+    user = User.objects.create_user(username=username, email=email, password=password)
 
     Pojistenec.objects.create(
+        user=user,
         jmeno=jmeno,
         prijmeni=prijmeni,
         email=email,
@@ -49,4 +55,18 @@ def register(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def me(request):
-    return Response({'is_staff': request.user.is_staff})
+    try:
+        pojistenec = request.user.pojistenec
+        return Response({
+            'is_staff': request.user.is_staff,
+            'jmeno': pojistenec.jmeno,
+            'prijmeni': pojistenec.prijmeni,
+            'pojistenec_id': pojistenec.id,
+        })
+    except:
+        return Response({
+            'is_staff': request.user.is_staff,
+            'jmeno': request.user.username,
+            'prijmeni': '',
+            'pojistenec_id': None,
+        })
