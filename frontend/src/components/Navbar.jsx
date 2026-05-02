@@ -7,11 +7,16 @@ function Navbar({ onLogout, uzivatel, isAdmin }) {
       <div className="navbar-left">
         <span className="navbar-logo" onClick={() => navigate('/')}>PojišťovnaApp</span>
         <div className="navbar-links">
-          <NavLink to="/dashboard" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-            Dashboard
-          </NavLink>
+          {isAdmin && (
+          <NavLink to="/prehled" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+            Přehled
+          </NavLink>)}
+          {isAdmin && (
           <NavLink to="/pojistenci" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
             Pojištěnci
+          </NavLink>)}
+          <NavLink to="/muj-profil" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+            Můj Profil
           </NavLink>
         </div>
       </div>

@@ -13,7 +13,7 @@ function Landing() {
         <div className="landing-logo">PojišťovnaApp</div>
         <div className="landing-nav-btns">
           {isLoggedIn ? (
-            <button onClick={() => navigate('/dashboard')} className="landing-btn-solid">Přejít do aplikace</button>
+            <button onClick={() => navigate('/muj-profil')} className="landing-btn-solid">Přejít do aplikace</button>
           ) : (
             <>
               <button onClick={() => navigate('/login')} className="landing-btn-outline">Přihlásit se</button>
@@ -39,7 +39,7 @@ function Landing() {
           </p>
           <div className="landing-hero-btns">
             {isLoggedIn ? (
-              <button onClick={() => navigate('/dashboard')} className="landing-btn-solid landing-btn-lg">Přejít do aplikace</button>
+              <button onClick={() => navigate('/muj-profil')} className="landing-btn-solid landing-btn-lg">Přejít do aplikace</button>
             ) : (
               <>
                 <button onClick={() => navigate('/register')} className="landing-btn-solid landing-btn-lg">Začít zdarma</button>
@@ -62,12 +62,12 @@ function Landing() {
           <div className="landing-feature-card">
             <span className="landing-feature-icon">📋</span>
             <h3>Správa pojistek</h3>
-            <p>Každý pojištěnec má přehled svých pojistek — životní, automobilové, cestovní a další.</p>
+            <p>Každý pojištěnec má přehled svých pojistek: životní, automobilové, cestovní a další...</p>
           </div>
           <div className="landing-feature-card">
             <span className="landing-feature-icon">📊</span>
             <h3>Dashboard a statistiky</h3>
-            <p>Přehledný dashboard s klíčovými statistikami pro rychlý přehled o stavu pojištění.</p>
+            <p>Admin přehled s klíčovými statistikami a přehledem nedávné aktivity.</p>
           </div>
           <div className="landing-feature-card">
             <span className="landing-feature-icon">🔒</span>
@@ -82,7 +82,7 @@ function Landing() {
         <h2>Připraveni začít?</h2>
         <p>Registrace je zdarma a trvá méně než minutu.</p>
         {isLoggedIn ? (
-          <button onClick={() => navigate('/dashboard')} className="landing-btn-solid landing-btn-lg">Přejít do aplikace</button>
+          <button onClick={() => navigate('/muj-profil')} className="landing-btn-solid landing-btn-lg">Přejít do aplikace</button>
         ) : (
           <button onClick={() => navigate('/register')} className="landing-btn-solid landing-btn-lg">Registrovat se</button>
         )}

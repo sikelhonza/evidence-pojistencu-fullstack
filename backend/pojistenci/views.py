@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from django.utils import timezone
+from datetime import timedelta
 from .models import Pojistenec, Pojistka
 from .serializers import PojistenecSerializer, PojistkaSerializer
 from rest_framework import viewsets, status
@@ -57,16 +59,70 @@ def register(request):
 def me(request):
     try:
         pojistenec = request.user.pojistenec
+        pojistky = pojistenec.pojistky.all()
+        pojistky_data = PojistkaSerializer(pojistky, many=True).data
         return Response({
             'is_staff': request.user.is_staff,
             'jmeno': pojistenec.jmeno,
             'prijmeni': pojistenec.prijmeni,
+            'email': pojistenec.email,
+            'telefon': pojistenec.telefon,
+            'vek': pojistenec.vek,
             'pojistenec_id': pojistenec.id,
+            'pojistky': pojistky_data,
         })
     except:
         return Response({
             'is_staff': request.user.is_staff,
             'jmeno': request.user.username,
             'prijmeni': '',
+            'email': '',
+            'telefon': '',
+            'vek': None,
             'pojistenec_id': None,
+            'pojistky': [],
         })
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def admin_stats(request):
+    if not request.user.is_staff:
+        return Response({'detail': 'Nemáte oprávnění.'}, status=status.HTTP_403_FORBIDDEN)
+
+    dnes = timezone.now().date()
+    za_30_dni = dnes + timedelta(days=30)
+    za_7_dni = dnes - timedelta(days=7)
+
+    # Počty
+    celkem_pojistencu = Pojistenec.objects.count()
+    celkem_pojistek = Pojistka.objects.count()
+    aktivni_pojistky = Pojistka.objects.filter(aktivni=True).count()
+    brzy_vyprsi = Pojistka.objects.filter(datum_konce__lte=za_30_dni, datum_konce__gte=dnes, aktivni=True).count()
+
+    # Pojistky podle typu
+    typy = {}
+    for pojistka in Pojistka.objects.filter(aktivni=True):
+        typy[pojistka.typ] = typy.get(pojistka.typ, 0) + 1
+
+    # Poslední registrace
+    posledni_registrace = Pojistenec.objects.order_by('-id')[:5]
+    posledni_data = [{'jmeno': p.jmeno, 'prijmeni': p.prijmeni, 'email': p.email} for p in posledni_registrace]
+
+    # Nedávno přidané pojistky
+    posledni_pojistky = Pojistka.objects.order_by('-id')[:5]
+    posledni_pojistky_data = [{
+        'nazev': p.nazev,
+        'typ': p.typ,
+        'pojistenec': f"{p.pojistenec.jmeno} {p.pojistenec.prijmeni}",
+        'datum_konce': str(p.datum_konce),
+    } for p in posledni_pojistky]
+
+    return Response({
+        'celkem_pojistencu': celkem_pojistencu,
+        'celkem_pojistek': celkem_pojistek,
+        'aktivni_pojistky': aktivni_pojistky,
+        'brzy_vyprsi': brzy_vyprsi,
+        'typy': typy,
+        'posledni_registrace': posledni_data,
+        'posledni_pojistky': posledni_pojistky_data,
+    })
