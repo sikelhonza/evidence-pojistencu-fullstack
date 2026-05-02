@@ -16,6 +16,16 @@ function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [uzivatel, setUzivatel] = useState(null);
   const navigate = useNavigate();
+  
+  const logout = () => {
+    setIsLoggedIn(false);
+    setIsAdmin(false);
+    setUzivatel(null);
+    localStorage.removeItem('access');
+    localStorage.removeItem('refresh');
+    navigate('/');
+  };
+
 
   const checkAdmin = async () => {
     try {
@@ -30,7 +40,9 @@ function App() {
         pojistenec_id: response.data.pojistenec_id,
       });
     } catch (error) {
-      console.error("Chyba při zjišťování oprávnění:", error);
+      if (error.response && error.response.status === 401) {
+        logout();
+      }
     }
   };
 
@@ -38,14 +50,6 @@ function App() {
     if (isLoggedIn) checkAdmin();
   }, [isLoggedIn]);
 
-  const logout = () => {
-    setIsLoggedIn(false);
-    setIsAdmin(false);
-    setUzivatel(null);
-    localStorage.removeItem('access');
-    localStorage.removeItem('refresh');
-    navigate('/');
-  };
 
  const handleLoginSuccess = async () => {
   setIsLoggedIn(true);
