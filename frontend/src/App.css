@@ -24,8 +24,6 @@ h1 {
   letter-spacing: -1px;
 }
 
-/* ─── TABULKA ─────────────────────────────────────────── */
-
 .main-table {
   width: 100%;
   border-collapse: collapse;
@@ -42,11 +40,10 @@ h1 {
   text-align: left;
 }
 
-/* OPRAVA: td explicitně bílá/světlá, ne zděděná šedá */
 .main-table td {
   padding: 20px;
   border-bottom: 1px solid #111;
-  color: #cccccc;         /* ← viditelná barva textu v tabulce */
+  color: #cccccc;         
   font-size: 0.95rem;
 }
 
@@ -74,7 +71,7 @@ h1 {
   font-size: 0.9rem;
 }
 
-/* ─── FORMULÁŘ ────────────────────────────────────────── */
+/* FORMULÁŘ */
 
 .form-card {
   background-color: #000000;
@@ -84,7 +81,7 @@ h1 {
   margin-bottom: 40px;
   width: 100%;
   max-width: 100%;
-  box-sizing: border-box;   /* ← zabraňuje přetékání */
+  box-sizing: border-box;   
 }
 
 .form-card h2 {
@@ -442,7 +439,7 @@ h1 {
   cursor: pointer;
   letter-spacing: -0.5px;
   padding-right: 30px;
-  border-right: 1px solid #333;  /* ← oddělovač */
+  border-right: 1px solid #333; 
 }
 
 .warning-banner {

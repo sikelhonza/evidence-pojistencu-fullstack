@@ -1,6 +1,3 @@
-/* Auth.css - společné styly pro Login a Register */
-
-/* OPRAVA: bez těchto pravidel 100vh nefunguje správně */
 html, body {
   height: 100%;
   margin: 0;
@@ -8,11 +5,11 @@ html, body {
 }
 
 #root {
-  height: 100%;                      /* ← React obalový element */
+  height: 100%;                      
 }
 
 .auth-wrapper {
-  min-height: 100vh;                 /* ← min-height místo height, jistější */
+  min-height: 100vh;                 
   display: flex;
   justify-content: center;
   align-items: center;
@@ -101,7 +98,7 @@ html, body {
 }
 
 .auth-wrapper {
-  flex: 1;  /* ← zabere celou zbývající výšku #root */
+  flex: 1; 
   min-height: 100svh;
   display: flex;
   justify-content: center;

@@ -16,7 +16,7 @@
 .form-card input {
   background: transparent;
   border: none;
-  border-bottom: 1px solid #333; /* Jen linka vespod */
+  border-bottom: 1px solid #333; 
   color: #fff;
   padding: 10px 5px;
   font-size: 1rem;
@@ -25,7 +25,7 @@
 
 .form-card input:focus {
   outline: none;
-  border-bottom-color: #fff; /* Při psaní se linka rozsvítí bíle */
+  border-bottom-color: #fff; 
 }
 
 .submit-btn {

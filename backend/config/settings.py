@@ -123,7 +123,6 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-# Povolení Reactu komunikovat s Django backendem
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:3000",
@@ -131,7 +130,6 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
 ]
 
-# Říkáme Djangu, že smí přijímat token v hlavičce
 CORS_ALLOW_HEADERS = [
     "accept",
     "authorization",
@@ -142,12 +140,11 @@ CORS_ALLOW_HEADERS = [
 ]
 
 REST_FRAMEWORK = {
-    # 1. Říkáme, JAK ověřujeme uživatele (pomocí JWT tokenu)
+    
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     
-    # 2. Říkáme, KDO má přístup k datům (jen přihlášený uživatel)
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
