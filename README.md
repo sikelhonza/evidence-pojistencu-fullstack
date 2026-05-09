@@ -47,7 +47,23 @@ Moderní webová aplikace pro správu evidence pojištěnců a jejich pojistnýc
 
 ---
 
-## Instalace a spuštění
+## Spuštění pomocí Docker (doporučeno)
+
+### Požadavky
+- [Docker Desktop](https://www.docker.com/get-started)
+
+### Spuštění
+```bash
+docker-compose up --build
+```
+
+Aplikace poběží na:
+- Frontend: http://localhost:5173
+- Backend: http://localhost:8000
+
+---
+
+## Manuální instalace
 
 ### Backend
 
@@ -68,5 +84,7 @@ cd frontend
 npm install
 npm run dev
 ```
+
+---
 
 Vytvořeno jako portfoliový projekt.
