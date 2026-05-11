@@ -1,45 +1,172 @@
-from django.shortcuts import render
 from django.utils import timezone
 from datetime import timedelta
 from .models import Pojistenec, Pojistka
 from .serializers import PojistenecSerializer, PojistkaSerializer
+from .authentication import LoginRateThrottle
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, throttle_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
+from django.conf import settings as django_settings
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
 
 class PojistenecViewSet(viewsets.ModelViewSet):
-    queryset = Pojistenec.objects.all()
     serializer_class = PojistenecSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Pojistenec.objects.all()
+        return Pojistenec.objects.filter(user=self.request.user)
+
+
 class PojistkaViewSet(viewsets.ModelViewSet):
-    queryset = Pojistka.objects.all()
     serializer_class = PojistkaSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Pojistka.objects.all()
+        try:
+            return Pojistka.objects.filter(pojistenec=self.request.user.pojistenec)
+        except Pojistenec.DoesNotExist:
+            return Pojistka.objects.none()
+
+def _cookie_settings(django_settings):
+    return {
+        'httponly': True,
+        'secure': not django_settings.DEBUG,
+        'samesite': 'Lax',
+    }
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+@throttle_classes([LoginRateThrottle])
+def token_obtain(request):
+    username = request.data.get('username', '')
+    password = request.data.get('password', '')
+
+    if not username or not password:
+        return Response({'detail': 'Zadejte uživatelské jméno a heslo.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    user = authenticate(username=username, password=password)
+    if user is None:
+        return Response({'detail': 'Nesprávné přihlašovací údaje.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    refresh = RefreshToken.for_user(user)
+    opts = _cookie_settings(django_settings)
+
+    response = Response({'detail': 'Přihlášení úspěšné.'})
+    response.set_cookie('access_token', str(refresh.access_token), max_age=3600, **opts)
+    response.set_cookie('refresh_token', str(refresh), max_age=7 * 24 * 3600, **opts)
+    return response
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def token_refresh_cookie(request):
+    raw_refresh = request.COOKIES.get('refresh_token')
+    if not raw_refresh:
+        return Response({'detail': 'Nejste přihlášeni.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    try:
+        refresh = RefreshToken(raw_refresh)
+        user = User.objects.get(id=refresh.payload['user_id'])
+        refresh.blacklist()
+        new_refresh = RefreshToken.for_user(user)
+        opts = _cookie_settings(django_settings)
+        response = Response({'detail': 'Token obnoven.'})
+        response.set_cookie('access_token', str(new_refresh.access_token), max_age=3600, **opts)
+        response.set_cookie('refresh_token', str(new_refresh), max_age=7 * 24 * 3600, **opts)
+        return response
+    except (TokenError, User.DoesNotExist):
+        return Response({'detail': 'Přihlášení vypršelo.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def token_logout(request):
+    try:
+        raw_refresh = request.COOKIES.get('refresh_token')
+        if raw_refresh:
+            RefreshToken(raw_refresh).blacklist()
+    except TokenError:
+        pass
+
+    opts = _cookie_settings(django_settings)
+    response = Response({'detail': 'Odhlášení úspěšné.'})
+    response.delete_cookie('access_token', samesite=opts['samesite'])
+    response.delete_cookie('refresh_token', samesite=opts['samesite'])
+    return response
+
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register(request):
-    username = request.data.get('username')
-    email = request.data.get('email')
-    password = request.data.get('password')
-    confirm_password = request.data.get('confirm_password')
-    jmeno = request.data.get('jmeno')
-    prijmeni = request.data.get('prijmeni')
-    telefon = request.data.get('telefon')
+    import re
+
+    username = request.data.get('username', '').strip()
+    email = request.data.get('email', '').strip()
+    password = request.data.get('password', '')
+    confirm_password = request.data.get('confirm_password', '')
+    jmeno = request.data.get('jmeno', '').strip()
+    prijmeni = request.data.get('prijmeni', '').strip()
+    telefon = request.data.get('telefon', '').strip()
     vek = request.data.get('vek')
 
-    if password != confirm_password:
-        return Response({'password': 'Hesla se neshodují.'}, status=status.HTTP_400_BAD_REQUEST)
+    errors = {}
 
-    if len(password) < 8:
-        return Response({'password': 'Heslo musí mít alespoň 8 znaků.'}, status=status.HTTP_400_BAD_REQUEST)
+    if not username or len(username) < 3:
+        errors['username'] = 'Uživatelské jméno musí mít alespoň 3 znaky.'
+    elif User.objects.filter(username=username).exists():
+        errors['username'] = 'Uživatel s tímto jménem již existuje.'
 
-    if User.objects.filter(username=username).exists():
-        return Response({'password': 'Uživatel s tímto jménem již existuje.'}, status=status.HTTP_400_BAD_REQUEST)
+    if not email or not re.match(r'^[^@\s]+@[^@\s]+\.[^@\s]+$', email):
+        errors['email'] = 'Zadejte platnou e-mailovou adresu.'
+    elif User.objects.filter(email=email).exists():
+        errors['email'] = 'Účet s tímto e-mailem již existuje.'
+
+    if not password or len(password) < 8:
+        errors['password'] = 'Heslo musí mít alespoň 8 znaků.'
+    elif password != confirm_password:
+        errors['password'] = 'Hesla se neshodují.'
+    else:
+        try:
+            validate_password(password, user=User(username=username, email=email))
+        except DjangoValidationError as e:
+            chybove_hlasky = {
+                'This password is too short. It must contain at least 8 characters.': 'Heslo je příliš krátké. Musí obsahovat alespoň 8 znaků.',
+                'This password is too common.': 'Heslo je příliš běžné.',
+                'This password is entirely numeric.': 'Heslo nesmí být pouze čísla.',
+                }
+            original = e.messages[0]
+            errors['password'] = chybove_hlasky.get(original, original)
+
+    if not jmeno or len(jmeno) > 50:
+        errors['jmeno'] = 'Jméno je povinné (max 50 znaků).'
+
+    if not prijmeni or len(prijmeni) > 50:
+        errors['prijmeni'] = 'Příjmení je povinné (max 50 znaků).'
+
+    if not telefon or not re.match(r'^\+?[\d\s\-]{9,20}$', telefon):
+        errors['telefon'] = 'Zadejte platné telefonní číslo (9–20 číslic).'
+
+    try:
+        vek = int(vek)
+        if vek < 1 or vek > 120:
+            errors['vek'] = 'Věk musí být mezi 1 a 120.'
+    except (TypeError, ValueError):
+        errors['vek'] = 'Věk musí být celé číslo.'
+
+    if errors:
+        return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
     user = User.objects.create_user(username=username, email=email, password=password)
 
@@ -49,7 +176,7 @@ def register(request):
         prijmeni=prijmeni,
         email=email,
         telefon=telefon,
-        vek=vek
+        vek=vek,
     )
 
     return Response({'detail': 'Registrace proběhla úspěšně.'}, status=status.HTTP_201_CREATED)
@@ -71,7 +198,7 @@ def me(request):
             'pojistenec_id': pojistenec.id,
             'pojistky': pojistky_data,
         })
-    except:
+    except Pojistenec.DoesNotExist:
         return Response({
             'is_staff': request.user.is_staff,
             'jmeno': request.user.username,

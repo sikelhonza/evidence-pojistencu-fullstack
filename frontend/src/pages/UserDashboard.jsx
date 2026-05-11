@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 
 function UserDashboard() {
   const [pojistenec, setPojistenec] = useState(null);
@@ -9,10 +9,7 @@ function UserDashboard() {
   useEffect(() => {
     const fetchPojistenec = async () => {
       try {
-        const accessToken = localStorage.getItem('access');
-        const response = await axios.get('http://127.0.0.1:8000/api/me/', {
-          headers: { Authorization: `Bearer ${accessToken}` }
-        });
+        const response = await api.get('/api/me/');
         setPojistenec(response.data);
       } catch (error) {
         console.error('Error fetching pojistenec:', error);
@@ -49,7 +46,6 @@ function UserDashboard() {
     <div className="container">
       <h1>Můj profil</h1>
 
-      {/* Osobní údaje */}
       <div className="detail-card">
         <h2 style={{ color: '#fff', fontWeight: 300, marginTop: 0, marginBottom: '25px', fontSize: '1.3rem' }}>Osobní údaje</h2>
         <div className="detail-info">
@@ -60,7 +56,6 @@ function UserDashboard() {
         </div>
       </div>
 
-      {/* Statistiky */}
       <div className="stats-grid" style={{ marginTop: '30px' }}>
         <div className="stat-card">
           <span className="stat-number">{aktivniPojistky.length}</span>
@@ -78,14 +73,12 @@ function UserDashboard() {
         </div>
       </div>
 
-      {/* Upozornění */}
       {brzyVyprsi.length > 0 && (
         <div className="warning-banner">
-          ⚠️ Máte {brzyVyprsi.length} pojistku/pojistky které vyprší do 30 dní!
+          Máte {brzyVyprsi.length} pojistku/pojistky které vyprší do 30 dní!
         </div>
       )}
 
-      {/* Pojistky */}
       <div className="pojistky-section" style={{ marginTop: '40px' }}>
         <div className="pojistky-header">
           <h2 style={{ color: '#fff', fontWeight: 300, fontSize: '1.5rem' }}>Moje pojistky</h2>

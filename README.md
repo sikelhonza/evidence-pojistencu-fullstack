@@ -1,90 +1,56 @@
-# Evidence pojištěnců – Fullstack aplikace
+# Evidence pojištěnců
 
-Moderní webová aplikace pro správu evidence pojištěnců a jejich pojistných smluv. Postavená na Django REST Framework a React.
-
----
+Webová aplikace pro správu pojištěnců a jejich pojistných smluv. Portfoliový projekt s důrazem na bezpečnost.
 
 ## Technologie
 
-**Backend:**
-- Python / Django
-- Django REST Framework
-- Simple JWT – autentizace pomocí JWT tokenů
-- SQLite (vývoj)
-
-**Frontend:**
-- React + Vite
-- React Router – navigace mezi stránkami
-- Axios – komunikace s API
-- React Hot Toast – notifikace
-
----
+**Backend:** Python · Django 6.0 · Django REST Framework · Simple JWT · SQLite/PostgreSQL  
+**Frontend:** React · Vite · React Router · Axios
 
 ## Funkce
 
-**Pro nepřihlášené uživatele:**
-- Landing page s popisem aplikace
+- Registrace a přihlášení s JWT autentizací (httpOnly cookies)
+- Osobní profil s přehledem pojistek a upozorněními na vypršení
+- Admin dashboard se statistikami a správou pojištěnců
+- Správa pojistných smluv (zdravotní, životní, auto, majetkové, cestovní, úrazové)
 
-**Pro přihlášené uživatele:**
-- Osobní profil s přehledem pojistek
-- Upozornění na pojistky blížící se k vypršení
+## Spuštění
 
-**Pro administrátory:**
-- Přehled všech pojištěnců
-- Přidávání, úprava a mazání pojištěnců
-- Správa pojistných smluv (životní, automobilové, cestovní a další)
-- Admin dashboard se statistikami a přehledem aktivity
-
----
-
-## Role
-
-| Role | Přístup |
-|------|---------|
-| Nepřihlášený | Landing page |
-| User | Vlastní profil, pojistky |
-| Admin | Vše výše + správa všech pojištěnců |
-
----
-
-## Spuštění pomocí Docker (doporučeno)
-
-### Požadavky
-- [Docker Desktop](https://www.docker.com/get-started)
-
-### Spuštění
+### Docker (doporučeno)
 ```bash
 docker-compose up --build
+# Frontend: http://localhost:5173
+# Backend:  http://localhost:8000
 ```
 
-Aplikace poběží na:
-- Frontend: http://localhost:5173
-- Backend: http://localhost:8000
-
----
-
-## Manuální instalace
-
-### Backend
-
+### Manuálně
 ```bash
-cd backend
-python -m venv venv
-venv\Scripts\activate
+# Backend
+cd backend && python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-python manage.py migrate
-python manage.py createsuperuser
-python manage.py runserver
-```
+cp .env.example .env  # vyplň hodnoty dle .env.example
+python manage.py migrate && python manage.py runserver
 
-### Frontend
-
-```bash
-cd frontend
-npm install
+# Frontend
+cd frontend && npm install
+cp .env.example .env  # nastav VITE_API_URL=http://localhost:8000
 npm run dev
 ```
 
----
+## Proměnné prostředí
 
-Vytvořeno jako portfoliový projekt.
+- Backend `.env` (viz `backend/.env.example`)
+
+
+- Frontend `.env` (viz `frontend/.env.example`)
+
+
+## Bezpečnost
+
+- JWT tokeny v httpOnly cookies (ochrana proti XSS)
+- Rotace refresh tokenů + blacklisting (ochrana proti krádeži tokenu)
+- IDOR ochrana přes filtrování dotazů dle uživatele
+- Rate limiting na login (5 pokusů/min)
+- Validace síly hesla (CommonPassword, Numeric, Similarity)
+- Validace vstupů na frontendu i backendu
+- Security HTTP hlavičky, CORS s credentials

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 
 function Dashboard() {
   const [stats, setStats] = useState(null);
@@ -18,10 +18,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const accessToken = localStorage.getItem('access');
-        const response = await axios.get('http://127.0.0.1:8000/api/admin-stats/', {
-          headers: { Authorization: `Bearer ${accessToken}` }
-        });
+        const response = await api.get('/api/admin-stats/');
         setStats(response.data);
       } catch (error) {
         console.error("Chyba při načítání statistik:", error);
@@ -36,7 +33,6 @@ function Dashboard() {
     <div className="container">
       <h1>Admin Dashboard</h1>
 
-      {/* Hlavní statistiky */}
       <div className="stats-grid">
         <div className="stat-card">
           <span className="stat-number">{stats.celkem_pojistencu}</span>
@@ -58,7 +54,6 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* Pojistky podle typu */}
       <div className="dashboard-section">
         <h2 className="dashboard-section-title">Pojistky podle typu</h2>
         <div className="typy-grid">
@@ -72,7 +67,6 @@ function Dashboard() {
       </div>
 
       <div className="dashboard-two-col">
-        {/* Poslední registrace */}
         <div className="dashboard-section">
           <h2 className="dashboard-section-title">Poslední registrace</h2>
           <table className="main-table">
@@ -91,7 +85,6 @@ function Dashboard() {
           </table>
         </div>
 
-        {/* Nedávno přidané pojistky */}
         <div className="dashboard-section">
           <h2 className="dashboard-section-title">Nedávno přidané pojistky</h2>
           <table className="main-table">

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from './api';
 import './Auth.css';
 import toast from 'react-hot-toast';
 
@@ -10,9 +10,7 @@ function Login({ onLoginSuccess, onSwitchToRegister }) {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/token/', { username, password });
-      localStorage.setItem('access', response.data.access);
-      localStorage.setItem('refresh', response.data.refresh);
+      await api.post('/api/auth/login/', { username, password });
       onLoginSuccess();
     } catch (error) {
       toast.error("Přihlášení selhalo. Zkontroluj údaje.");

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import toast from 'react-hot-toast';
 
 function PojistenecDetail({ isAdmin }) {
@@ -15,12 +15,9 @@ function PojistenecDetail({ isAdmin }) {
 
   const formatTyp = (typ) => {
     const typy = {
-      'zdravotni': 'Zdravotní',
-      'zivotni': 'Životní',
-      'automobilove': 'Automobilové',
-      'majetkove': 'Majetkové',
-      'cestovni': 'Cestovní',
-      'urazove': 'Úrazové',
+      'zdravotni': 'Zdravotní', 'zivotni': 'Životní',
+      'automobilove': 'Automobilové', 'majetkove': 'Majetkové',
+      'cestovni': 'Cestovní', 'urazove': 'Úrazové',
     };
     return typy[typ] || typ;
   };
@@ -31,10 +28,7 @@ function PojistenecDetail({ isAdmin }) {
 
   const fetchDetail = async () => {
     try {
-      const token = localStorage.getItem('access');
-      const response = await axios.get(`http://127.0.0.1:8000/api/pojistenci/${id}/`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/api/pojistenci/${id}/`);
       setPojistenec(response.data);
       setPojistky(response.data.pojistky || []);
     } catch (error) {
@@ -47,10 +41,7 @@ function PojistenecDetail({ isAdmin }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('access');
-      await axios.post('http://127.0.0.1:8000/api/pojistky/', {
-        ...formData, pojistenec: id
-      }, { headers: { Authorization: `Bearer ${token}` } });
+      await api.post('/api/pojistky/', { ...formData, pojistenec: id });
       toast.success("Pojistka byla přidána!");
       setShowForm(false);
       setFormData({ typ: 'zdravotni', nazev: '', castka: '', datum_zacatku: '', datum_konce: '', aktivni: true });
@@ -67,10 +58,7 @@ function PojistenecDetail({ isAdmin }) {
         <button onClick={async () => {
           toast.dismiss(t.id);
           try {
-            const token = localStorage.getItem('access');
-            await axios.delete(`http://127.0.0.1:8000/api/pojistky/${pojistkaId}/`, {
-              headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.delete(`/api/pojistky/${pojistkaId}/`);
             toast.success("Pojistka smazána.");
             fetchDetail();
           } catch {
@@ -125,7 +113,7 @@ function PojistenecDetail({ isAdmin }) {
                   <option value="urazove">Úrazové</option>
                 </select>
                 <input placeholder="Název pojistky" value={formData.nazev} onChange={e => setFormData({...formData, nazev: e.target.value})} required />
-                <input placeholder="Částka (Kč)" type="number" value={formData.castka} onChange={e => setFormData({...formData, castka: e.target.value})} required />
+                <input placeholder="Částka (Kč)" type="number" min="0" value={formData.castka} onChange={e => setFormData({...formData, castka: e.target.value})} required />
                 <input placeholder="Datum začátku" type="date" value={formData.datum_zacatku} onChange={e => setFormData({...formData, datum_zacatku: e.target.value})} required />
                 <input placeholder="Datum konce" type="date" value={formData.datum_konce} onChange={e => setFormData({...formData, datum_konce: e.target.value})} required />
               </div>

@@ -1,9 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import './Landing.css';
 
-function Landing() {
+function Landing({ isLoggedIn }) {
   const navigate = useNavigate();
-  const isLoggedIn = !!localStorage.getItem('access');
 
   return (
     <div className="landing">

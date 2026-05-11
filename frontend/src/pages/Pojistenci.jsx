@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PojistenecForm from '../PojistenecForm';
-import axios from 'axios';
+import api from '../api';
 import toast from 'react-hot-toast';
 
 function Pojistenci({ isAdmin, onLogout }) {
@@ -12,11 +12,7 @@ function Pojistenci({ isAdmin, onLogout }) {
 
   const fetchPojistenci = async () => {
     try {
-      const accessToken = localStorage.getItem('access');
-      if (!accessToken) return;
-      const response = await axios.get('http://127.0.0.1:8000/api/pojistenci/', {
-        headers: { Authorization: `Bearer ${accessToken}` }
-      });
+      const response = await api.get('/api/pojistenci/');
       setPojistenci(response.data);
     } catch (error) {
       if (error.response?.status === 401) onLogout();
@@ -41,7 +37,7 @@ function Pojistenci({ isAdmin, onLogout }) {
   });
 
   const smazPojistence = async (e, id) => {
-    e.stopPropagation(); // ← zabrání přechodu na detail při kliknutí na smazat
+    e.stopPropagation();
     toast((t) => (
       <span>
         Opravdu smazat pojištěnce?{' '}
@@ -49,10 +45,7 @@ function Pojistenci({ isAdmin, onLogout }) {
           onClick={async () => {
             toast.dismiss(t.id);
             try {
-              const accessToken = localStorage.getItem('access');
-              await axios.delete(`http://127.0.0.1:8000/api/pojistenci/${id}/`, {
-                headers: { Authorization: `Bearer ${accessToken}` }
-              });
+              await api.delete(`/api/pojistenci/${id}/`);
               toast.success("Pojištěnec byl smazán.");
               fetchPojistenci();
             } catch (error) {
@@ -75,7 +68,7 @@ function Pojistenci({ isAdmin, onLogout }) {
   };
 
   const vybratKEditaci = (e, osoba) => {
-    e.stopPropagation(); // ← zabrání přechodu na detail při kliknutí na upravit
+    e.stopPropagation();
     setEditujiciPojistenec(osoba);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };

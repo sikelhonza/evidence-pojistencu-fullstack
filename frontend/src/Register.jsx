@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from './api';
 import './Auth.css';
 import toast from 'react-hot-toast'
 
@@ -8,22 +8,70 @@ function Register({ onSwitchToLogin }) {
     username: '', email: '', password: '', confirm_password: '',
     jmeno: '', prijmeni: '', telefon: '', vek: ''
   });
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    setErrors(prev => ({ ...prev, [name]: '' }));
+  };
+
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.username || formData.username.length < 3)
+      newErrors.username = 'Min. 3 znaky.';
+    if (!formData.jmeno)
+      newErrors.jmeno = 'Jméno je povinné.';
+    if (!formData.prijmeni)
+      newErrors.prijmeni = 'Příjmení je povinné.';
+    if (!formData.telefon || !/^\+?[\d\s\-]{9,20}$/.test(formData.telefon))
+      newErrors.telefon = 'Neplatné telefonní číslo.';
+    const vek = Number(formData.vek);
+    if (!formData.vek || vek < 1 || vek > 120)
+      newErrors.vek = 'Věk musí být 1–120.';
+    if (!formData.password || formData.password.length < 8)
+      newErrors.password = 'Heslo musí mít min. 8 znaků.';
+    else if (formData.password !== formData.confirm_password)
+      newErrors.confirm_password = 'Hesla se neshodují.';
+    return newErrors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
     try {
-      await axios.post('http://127.0.0.1:8000/api/register/', formData);
+      await api.post('/api/register/', formData);
       toast.success("Registrace proběhla úspěšně! Nyní se můžeš přihlásit.");
       onSwitchToLogin();
     } catch (error) {
-      const message = error.response?.data?.password || "Registrace selhala. Zkontroluj údaje.";
-      toast.error(message);
+      const data = error.response?.data;
+      if (data && typeof data === 'object') {
+        setErrors(data);
+        const firstError = Object.values(data)[0];
+        toast.error(Array.isArray(firstError) ? firstError[0] : firstError);
+      } else {
+        toast.error("Registrace selhala. Zkontroluj údaje.");
+      }
     }
   };
+
+  const field = (name, placeholder, type = 'text', extra = {}) => (
+    <div>
+      <input
+        name={name}
+        type={type}
+        placeholder={placeholder}
+        onChange={handleChange}
+        style={errors[name] ? { borderColor: '#ff4d4d' } : {}}
+        {...extra}
+      />
+      {errors[name] && <p style={{ color: '#ff4d4d', fontSize: '0.8rem', margin: '2px 0 0' }}>{errors[name]}</p>}
+    </div>
+  );
 
   return (
     <div className="auth-wrapper">
@@ -31,14 +79,14 @@ function Register({ onSwitchToLogin }) {
         <h2>Registrace</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-inputs-stack">
-            <input name="username" placeholder="Uživatelské jméno" onChange={handleChange} required />
-            <input name="jmeno" placeholder="Jméno" onChange={handleChange} required />
-            <input name="prijmeni" placeholder="Příjmení" onChange={handleChange} required />
-            <input name="email" type="email" placeholder="Email" onChange={handleChange} required />
-            <input name="telefon" placeholder="Telefon" onChange={handleChange} required />
-            <input name="vek" type="number" placeholder="Věk" onChange={handleChange} required />
-            <input name="password" type="password" placeholder="Heslo" onChange={handleChange} required />
-            <input name="confirm_password" type="password" placeholder="Potvrdit heslo" onChange={handleChange} required />
+            {field('username', 'Uživatelské jméno')}
+            {field('jmeno', 'Jméno')}
+            {field('prijmeni', 'Příjmení')}
+            {field('email', 'Email', 'email')}
+            {field('telefon', 'Telefon', 'tel')}
+            {field('vek', 'Věk', 'number', { min: 1, max: 120 })}
+            {field('password', 'Heslo', 'password', { minLength: 8 })}
+            {field('confirm_password', 'Potvrdit heslo', 'password')}
           </div>
           <button type="submit" className="submit-btn">Zaregistrovat se</button>
         </form>

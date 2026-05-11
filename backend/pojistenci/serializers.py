@@ -1,38 +1,31 @@
 from rest_framework import serializers
 from .models import Pojistenec, Pojistka
-from django.contrib.auth.models import User
+
 
 class PojistkaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pojistka
-        fields = '__all__'
-
-class PojistenecSerializer(serializers.ModelSerializer):
-    pojistky = PojistkaSerializer(many=True, read_only=True) 
-    class Meta:
-        model = Pojistenec
-        fields = '__all__'
-
-
-class UserSerializer(serializers.ModelSerializer):
-    confirm_password = serializers.CharField(write_only=True)
-
-    class Meta:
-        model = User
-        fields = ['username', 'password', 'confirm_password', 'email']
-        extra_kwargs = {
-            'password': {'write_only': True},
-            'email': {'required': True}
-        }
+        fields = ['id', 'pojistenec', 'typ', 'nazev', 'castka', 'datum_zacatku', 'datum_konce', 'aktivni']
+        read_only_fields = ['id']
 
     def validate(self, data):
-        if data['password'] != data['confirm_password']:
-            raise serializers.ValidationError({"password": "Hesla se neshodují."})
-        if len(data['password']) < 8:
-            raise serializers.ValidationError({"password": "Heslo musí mít alespoň 8 znaků."})
+        user = self.context['request'].user
+        if not user.is_staff:
+            data.pop('aktivni', None)
+            data.pop('castka', None)
         return data
+    
+    def validate_pojistenec(self, value):
+        user = self.context['request'].user
+        if not user.is_staff and value.user != user:
+            raise serializers.ValidationError("Nemáte oprávnění přidávat pojistky jiným pojištěncům.")
+        return value
 
-    def create(self, validated_data):
-        validated_data.pop('confirm_password')
-        user = User.objects.create_user(**validated_data)
-        return user
+
+
+class PojistenecSerializer(serializers.ModelSerializer):
+    pojistky = PojistkaSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Pojistenec
+        fields = ['id', 'jmeno', 'prijmeni', 'email', 'telefon', 'vek', 'pojistky']
