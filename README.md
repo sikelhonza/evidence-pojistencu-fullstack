@@ -1,6 +1,6 @@
 # Evidence pojištěnců
 
-Webová aplikace pro správu pojištěnců a jejich pojistných smluv. Portfoliový projekt s důrazem na bezpečnost.
+Webová aplikace pro správu pojištěnců a jejich pojistných smluv. Portfoliový projekt.
 
 ## Technologie
 
