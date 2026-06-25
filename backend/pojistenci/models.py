@@ -9,6 +9,10 @@ class Pojistenec(models.Model):
     telefon = models.CharField(max_length=20)
     vek = models.IntegerField()
 
+    class Meta:
+        verbose_name = "Pojištěnec"
+        verbose_name_plural = "Pojištěnci"
+
     def __str__(self):
         return f"{self.jmeno} {self.prijmeni}"
 
@@ -29,6 +33,10 @@ class Pojistka(models.Model):
     datum_zacatku = models.DateField()
     datum_konce = models.DateField()
     aktivni = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = "Pojistka"
+        verbose_name_plural = "Pojišťky"
 
     def __str__(self):
         return f"{self.nazev} - {self.pojistenec}"

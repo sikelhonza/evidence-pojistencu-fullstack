@@ -66,6 +66,7 @@ function Register({ onSwitchToLogin }) {
         type={type}
         placeholder={placeholder}
         onChange={handleChange}
+        value={formData[name]}
         style={errors[name] ? { borderColor: '#ff4d4d' } : {}}
         {...extra}
       />

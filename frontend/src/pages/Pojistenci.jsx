@@ -75,7 +75,7 @@ function Pojistenci({ isAdmin, onLogout }) {
 
   return (
     <div className="container">
-      <h1>Evidence pojištěnců</h1>
+      <h1>Správa pojištěnců</h1>
 
       {isAdmin && (
         <PojistenecForm
